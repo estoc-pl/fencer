@@ -1,0 +1,8 @@
+.idea
+cmake-build-debug
+
+build
+
+CMakeUserPresets.json
+
+vcpkg-configuration.json

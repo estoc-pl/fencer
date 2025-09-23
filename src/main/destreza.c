@@ -1,0 +1,130 @@
+#include "destreza.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <json-c/json.h>
+
+const Version SUPPORTED_VERSION = {.major = 0, .minor = 0};
+
+void parse_version(Destreza *destreza, const json_object *root);
+
+void parse_commands(Destreza *destreza, const json_object *root);
+
+void parse_function_commands(Destreza *destreza, const json_object *commands);
+
+void parse_arithmetic_commands(Destreza *destreza, const json_object *commands);
+
+uint16_t parse_command_code(json_object *json);
+
+Destreza *load_destreza() {
+    json_object *root = json_object_from_file("resources/destreza.json");
+    if (!root) {
+        return NULL;
+    }
+
+    Destreza *destreza = malloc(sizeof(Destreza));
+    if (!destreza) {
+        json_object_put(root);
+        return NULL;
+    }
+
+    parse_version(destreza, root);
+
+    if (destreza->version.major != SUPPORTED_VERSION.major) {
+        fprintf(
+            stderr,
+            "ERROR: Cannot parse Destreza config with major version (%d.%d) higher than supported (%d.%d)\n",
+            destreza->version.major, destreza->version.minor,
+            SUPPORTED_VERSION.major, SUPPORTED_VERSION.minor
+        );
+        free_destreza(destreza);
+        return NULL;
+    }
+    if (destreza->version.minor != SUPPORTED_VERSION.minor) {
+        fprintf(
+            stderr,
+            "WARNING: Destreza config's minor version (%d.%d) is higher than supported (%d.%d)\n",
+            destreza->version.major, destreza->version.minor,
+            SUPPORTED_VERSION.major, SUPPORTED_VERSION.minor
+        );
+    }
+
+    parse_commands(destreza, root);
+
+    json_object_put(root);
+
+    return destreza;
+}
+
+void parse_version(Destreza *destreza, const json_object *root) {
+    if (!destreza) {
+        return;
+    }
+
+    json_object *version_object = NULL;
+    json_object_object_get_ex(root, "version", &version_object);
+
+    const char *version = json_object_get_string(version_object);
+
+    char *version_copy = strdup(version);
+    const char *major = strtok(version_copy, ".");
+    const char *minor = strtok(NULL, ".");
+
+    destreza->version.major = strtol(major, NULL, 10);
+    destreza->version.minor = strtol(minor, NULL, 10);
+
+    free(version_copy);
+}
+
+void parse_commands(Destreza *destreza, const json_object *root) {
+    json_object *commands = NULL;
+    json_object_object_get_ex(root, "commands", &commands);
+
+    parse_function_commands(destreza, commands);
+    parse_arithmetic_commands(destreza, commands);
+}
+
+void parse_function_commands(Destreza *destreza, const json_object *commands) {
+    if (!destreza) {
+        return;
+    }
+
+    json_object *function = NULL, *call_constructor = NULL, *push_vararg_end = NULL;
+    json_object_object_get_ex(commands, "function", &function);
+    json_object_object_get_ex(function, "call_constructor", &call_constructor);
+    json_object_object_get_ex(function, "push_vararg_end", &push_vararg_end);
+
+    destreza->commands.function.call_constructor = parse_command_code(call_constructor);
+    destreza->commands.function.push_vararg_end = parse_command_code(push_vararg_end);
+}
+
+void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) {
+    if (!destreza) {
+        return;
+    }
+
+    json_object *arithmetic = NULL, *add = NULL, *subtract = NULL, *negate = NULL, *multiply = NULL, *divide = NULL;
+    json_object_object_get_ex(commands, "arithmetic", &arithmetic);
+    json_object_object_get_ex(arithmetic, "add", &add);
+    json_object_object_get_ex(arithmetic, "subtract", &subtract);
+    json_object_object_get_ex(arithmetic, "negate", &negate);
+    json_object_object_get_ex(arithmetic, "multiply", &multiply);
+    json_object_object_get_ex(arithmetic, "divide", &divide);
+
+    destreza->commands.arithmetic.add = parse_command_code(add);
+    destreza->commands.arithmetic.subtract = parse_command_code(subtract);
+    destreza->commands.arithmetic.negate = parse_command_code(negate);
+    destreza->commands.arithmetic.multiply = parse_command_code(multiply);
+    destreza->commands.arithmetic.divide = parse_command_code(divide);
+}
+
+uint16_t parse_command_code(json_object *json) {
+    const char *str = json_object_get_string(json);
+    return strtol(str, NULL, 2);
+}
+
+void free_destreza(Destreza *destreza) {
+    if (destreza != NULL) {
+        free(destreza);
+    }
+}

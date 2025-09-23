@@ -1,0 +1,10 @@
+{
+  "version": "0.0.0",
+  "name": "fencer",
+  "dependencies": [
+    {
+      "name": "json-c",
+      "version>=": "0.18-20240915"
+    }
+  ]
+}
