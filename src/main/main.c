@@ -1,4 +1,47 @@
-int main(void) {
+#include <cargs.h>
+
+static cag_option cli_options[] = {
+    {
+        .identifier = 'h',
+        .access_letters = "h",
+        .access_name = "help",
+        .description = "Displays this help message"
+    }
+};
+
+void print_help() {
+    printf("Usage: fencer [OPTIONS] <exec_file>\n");
+    printf("Arguments:\n");
+    printf("  exec_file — Path to file containing Destreza byte code to be executed\n");
+    printf("Options:\n");
+    cag_option_print(cli_options, CAG_ARRAY_SIZE(cli_options), stdout);
+}
+
+int main(const int argc, char *argv[]) {
+    cag_option_context context;
+    cag_option_init(&context, cli_options, CAG_ARRAY_SIZE(cli_options), argc, argv);
+    while (cag_option_fetch(&context)) {
+        switch (cag_option_get_identifier(&context)) {
+            case 'h':
+                print_help();
+                return 0;
+            default:
+                cag_option_print_error(&context, stdout);
+                return 1;
+        }
+    }
+
+    const int param_index = cag_option_get_index(&context);
+    if (param_index >= argc) {
+        print_help();
+        return 1;
+    }
+    if (param_index < argc - 1) {
+        fprintf(stderr, "Error: Executing multiple files is not supported yet\n");
+        return 1;
+    }
+
+    const char *exec_path = argv[param_index];
 
     return 0;
 }

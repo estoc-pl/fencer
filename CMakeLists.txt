@@ -4,6 +4,7 @@ project(fencer C)
 set(CMAKE_C_STANDARD 11)
 
 find_package(json-c CONFIG REQUIRED)
+find_package(Cargs CONFIG REQUIRED)
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(RESOURCES_DIR ${SRC_DIR}/resources)
@@ -36,3 +37,4 @@ add_dependencies(fencer stage_resources)
 
 
 target_link_libraries(fencer PRIVATE json-c::json-c)
+target_link_libraries(fencer PRIVATE cargs)

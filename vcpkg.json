@@ -5,6 +5,10 @@
     {
       "name": "json-c",
       "version>=": "0.18-20240915"
+    },
+    {
+      "name": "cargs",
+      "version>=": "1.2.0"
     }
   ]
 }
