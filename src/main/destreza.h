@@ -3,6 +3,15 @@
 
 #include <stdint.h>
 
+/*
+ * Minor version update:
+ * - command code was changed;
+ * - command was deleted.
+ * Major version update:
+ * - new command was added;
+ * - command was renamed/moved;
+ * - command code format was changed.
+ */
 typedef struct {
     uint16_t major;
     uint16_t minor;

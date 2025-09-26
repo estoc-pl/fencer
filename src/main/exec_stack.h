@@ -5,12 +5,12 @@
 
 #define WORD uint64_t
 #define WORD_TYPE uint8_t
-#define BLOCK_SIZE 1024
+#define BLOCK_SIZE 908
 
 typedef struct StackBlock {
     WORD frames[BLOCK_SIZE];
     WORD_TYPE types[BLOCK_SIZE];
-    uint32_t sp;
+    uint64_t sp;
     struct StackBlock *prev_block;
 } StackBlock;
 

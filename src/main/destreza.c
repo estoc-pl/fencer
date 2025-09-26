@@ -22,7 +22,7 @@ Destreza *load_destreza() {
         return NULL;
     }
 
-    Destreza *destreza = malloc(sizeof(Destreza));
+    Destreza *destreza = calloc(1, sizeof(Destreza));
     if (!destreza) {
         json_object_put(root);
         return NULL;
@@ -85,12 +85,16 @@ void parse_commands(Destreza *destreza, const json_object *root) {
 }
 
 void parse_function_commands(Destreza *destreza, const json_object *commands) {
-    if (!destreza) {
+    if (!destreza || !commands) {
         return;
     }
 
     json_object *function = NULL, *call_constructor = NULL, *push_vararg_end = NULL;
     json_object_object_get_ex(commands, "function", &function);
+    if (!function) {
+        return;
+    }
+
     json_object_object_get_ex(function, "call_constructor", &call_constructor);
     json_object_object_get_ex(function, "push_vararg_end", &push_vararg_end);
 
@@ -99,12 +103,16 @@ void parse_function_commands(Destreza *destreza, const json_object *commands) {
 }
 
 void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) {
-    if (!destreza) {
+    if (!destreza || !commands) {
         return;
     }
 
     json_object *arithmetic = NULL, *add = NULL, *subtract = NULL, *negate = NULL, *multiply = NULL, *divide = NULL;
     json_object_object_get_ex(commands, "arithmetic", &arithmetic);
+    if (!arithmetic) {
+        return;
+    }
+
     json_object_object_get_ex(arithmetic, "add", &add);
     json_object_object_get_ex(arithmetic, "subtract", &subtract);
     json_object_object_get_ex(arithmetic, "negate", &negate);
@@ -119,6 +127,9 @@ void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) 
 }
 
 uint16_t parse_command_code(json_object *json) {
+    if (!json) {
+        return 0;
+    }
     const char *str = json_object_get_string(json);
     return strtol(str, NULL, 2);
 }
