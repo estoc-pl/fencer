@@ -35,9 +35,18 @@ CodeSpace *init_code_space(const char *exec_file_path, const Version destreza_ve
     return NULL;
 }
 
-void code_space_read_next_instruction(const CodeSpace *code_space, uint16_t *code, uint8_t *data) {
-    *code = (uint16_t) code_space->data[code_space->ip] << 8 | code_space->data[code_space->ip + 1];
-    *data = code_space->data[code_space->ip + 2];
+void code_space_read_next_instruction(
+    const CodeSpace *code_space,
+    uint16_t *code,
+    uint8_t **data,
+    uint64_t *length_left
+) {
+    const uint64_t current_length_left = code_space->size - code_space->ip;
+    if (current_length_left >= 2) {
+        *code = (uint16_t) code_space->data[code_space->ip] << 8 | code_space->data[code_space->ip + 1];
+        *data = &code_space->data[code_space->ip + 2];
+        *length_left = current_length_left - 2;
+    }
 }
 
 void code_space_shift_ip(CodeSpace *code_space, const int64_t offset) {

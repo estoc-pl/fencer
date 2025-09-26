@@ -10,11 +10,15 @@ void parse_version(Destreza *destreza, const json_object *root);
 
 void parse_commands(Destreza *destreza, const json_object *root);
 
-void parse_function_commands(Destreza *destreza, const json_object *commands);
+uint16_t parse_command_code(json_object *json);
+
+void parse_int_commands(Destreza *destreza, const json_object *commands);
 
 void parse_arithmetic_commands(Destreza *destreza, const json_object *commands);
 
-uint16_t parse_command_code(json_object *json);
+void parse_types(Destreza *destreza, const json_object *root);
+
+uint8_t parse_type_code(json_object *json);
 
 Destreza *load_destreza() {
     json_object *root = json_object_from_file("resources/destreza.json");
@@ -50,6 +54,7 @@ Destreza *load_destreza() {
     }
 
     parse_commands(destreza, root);
+    parse_types(destreza, root);
 
     json_object_put(root);
 
@@ -80,26 +85,38 @@ void parse_commands(Destreza *destreza, const json_object *root) {
     json_object *commands = NULL;
     json_object_object_get_ex(root, "commands", &commands);
 
-    parse_function_commands(destreza, commands);
+    parse_int_commands(destreza, commands);
     parse_arithmetic_commands(destreza, commands);
 }
 
-void parse_function_commands(Destreza *destreza, const json_object *commands) {
+void parse_types(Destreza *destreza, const json_object *root) {
+    json_object *types = NULL;
+    json_object_object_get_ex(root, "types", &types);
+
+    if (!types) {
+        return;
+    }
+
+    json_object *int_type = NULL;
+    json_object_object_get_ex(types, "int", &int_type);
+
+    destreza->types.int_type = parse_type_code(int_type);
+}
+
+void parse_int_commands(Destreza *destreza, const json_object *commands) {
     if (!destreza || !commands) {
         return;
     }
 
-    json_object *function = NULL, *call_constructor = NULL, *push_vararg_end = NULL;
-    json_object_object_get_ex(commands, "function", &function);
-    if (!function) {
+    json_object *int_commands = NULL, *push = NULL;
+    json_object_object_get_ex(commands, "int", &int_commands);
+    if (!int_commands) {
         return;
     }
 
-    json_object_object_get_ex(function, "call_constructor", &call_constructor);
-    json_object_object_get_ex(function, "push_vararg_end", &push_vararg_end);
+    json_object_object_get_ex(int_commands, "push", &push);
 
-    destreza->commands.function.call_constructor = parse_command_code(call_constructor);
-    destreza->commands.function.push_vararg_end = parse_command_code(push_vararg_end);
+    destreza->commands.int_commands.push = parse_command_code(push);
 }
 
 void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) {
@@ -127,6 +144,14 @@ void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) 
 }
 
 uint16_t parse_command_code(json_object *json) {
+    if (!json) {
+        return 0;
+    }
+    const char *str = json_object_get_string(json);
+    return strtol(str, NULL, 2);
+}
+
+uint8_t parse_type_code(json_object *json) {
     if (!json) {
         return 0;
     }

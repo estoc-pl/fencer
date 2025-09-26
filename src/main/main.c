@@ -46,7 +46,12 @@ int main(const int argc, char *argv[]) {
     const char *exec_file_path = argv[param_index];
 
     const Destreza *destreza = load_destreza();
-    const CodeSpace *code_space = init_code_space(exec_file_path, destreza->version);
+    if (!destreza) {
+        fprintf(stderr, "ERROR: An unexpected error occurred while loading Destreza config\n");
+        return 1;
+    }
+
+    CodeSpace *code_space = init_code_space(exec_file_path, destreza->version);
 
     if (code_space) {
     }

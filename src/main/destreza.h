@@ -5,12 +5,12 @@
 
 /*
  * Minor version update:
- * - command code was changed;
- * - command was deleted.
+ * - command/type code was changed;
+ * - command/type was deleted.
  * Major version update:
- * - new command was added;
- * - command was renamed/moved;
- * - command code format was changed.
+ * - new command/type was added;
+ * - command/type was renamed/moved;
+ * - command/type code format was changed.
  */
 typedef struct {
     uint16_t major;
@@ -23,12 +23,9 @@ typedef struct {
     Version version;
 
     struct {
-        uint16_t push_int;
-
         struct {
-            uint16_t call_constructor;
-            uint16_t push_vararg_end;
-        } function;
+            uint16_t push;
+        } int_commands;
 
         struct {
             uint16_t add;
@@ -38,6 +35,10 @@ typedef struct {
             uint16_t divide;
         } arithmetic;
     } commands;
+
+    struct {
+        uint16_t int_type;
+    } types;
 } Destreza;
 
 Destreza *load_destreza();

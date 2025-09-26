@@ -1,6 +1,6 @@
 #include "exec_stack.h"
 
-#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 StackBlock *init_block();
@@ -22,7 +22,7 @@ ExecStack *init_stack() {
     return stack;
 }
 
-void push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
+void exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
     if (!stack) {
         return;
     }
@@ -41,7 +41,7 @@ void push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
     stack->active_block->sp++;
 }
 
-bool pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type) {
+bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type) {
     if (!stack) {
         return false;
     }
@@ -65,6 +65,39 @@ bool pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type) {
     }
 
     return true;
+}
+
+void print_binary(const uint8_t byte) {
+    for (uint8_t mask = 0b10000000; mask != 0; mask >>= 1) {
+        if (byte & mask) {
+            printf("1");
+        } else {
+            printf("0");
+        }
+    }
+}
+
+void exec_stack_print_dump(const ExecStack *stack) {
+    if (!stack) {
+        return;
+    }
+
+    const StackBlock *current_block = stack->active_block;
+    while (current_block) {
+        for (int64_t i = current_block->sp - 1; i >= 0; i--) {
+            print_binary(current_block->types[i]);
+            printf("     ");
+            for (int j = 1; j <= 8; j++) {
+                print_binary((uint8_t) (current_block->frames[i] >> (64 - j * 8)));
+                if (j != 8) {
+                    printf(".");
+                } else {
+                    printf("\n");
+                }
+            }
+        }
+        current_block = current_block->prev_block;
+    }
 }
 
 void free_stack(ExecStack *stack) {
