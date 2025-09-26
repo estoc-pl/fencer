@@ -1,5 +1,7 @@
 #include <cargs.h>
 
+#include "code_space.h"
+
 static cag_option cli_options[] = {
     {
         .identifier = 'h',
@@ -37,11 +39,17 @@ int main(const int argc, char *argv[]) {
         return 1;
     }
     if (param_index < argc - 1) {
-        fprintf(stderr, "Error: Executing multiple files is not supported yet\n");
+        fprintf(stderr, "ERROR: Executing multiple files is not supported yet\n");
         return 1;
     }
 
-    const char *exec_path = argv[param_index];
+    const char *exec_file_path = argv[param_index];
+
+    const Destreza *destreza = load_destreza();
+    const CodeSpace *code_space = init_code_space(exec_file_path, destreza->version);
+
+    if (code_space) {
+    }
 
     return 0;
 }

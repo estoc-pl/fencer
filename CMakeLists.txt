@@ -17,6 +17,8 @@ add_executable(
         ${MAIN_DIR}/destreza.c
         ${MAIN_DIR}/exec_stack.h
         ${MAIN_DIR}/exec_stack.c
+        ${MAIN_DIR}/code_space.c
+        ${MAIN_DIR}/code_space.h
 )
 
 
