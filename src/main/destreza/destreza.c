@@ -1,12 +1,15 @@
 #include "destreza.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <json-c/json.h>
 
-const Version SUPPORTED_VERSION = {.major = 0, .minor = 0};
+#include "destreza_errors.h"
 
-void parse_version(Destreza *destreza, const json_object *root);
+bool parse_version(Destreza *destreza, const json_object *root, FencerError **error);
+
+bool verify_destreza_version(DestrezaVersion parsed_version, FencerError **error);
 
 void parse_commands(Destreza *destreza, const json_object *root);
 
@@ -20,37 +23,24 @@ void parse_types(Destreza *destreza, const json_object *root);
 
 uint8_t parse_type_code(json_object *json);
 
-Destreza *load_destreza() {
+Destreza *load_destreza(FencerError **error) {
     json_object *root = json_object_from_file("resources/destreza.json");
     if (!root) {
+        *error = init_fencer_error(UNKNOWN_DESTREZA_LOAD_ERROR, false);
         return NULL;
     }
 
     Destreza *destreza = calloc(1, sizeof(Destreza));
     if (!destreza) {
         json_object_put(root);
+        *error = init_fencer_error(UNKNOWN_DESTREZA_LOAD_ERROR, false);
         return NULL;
     }
 
-    parse_version(destreza, root);
-
-    if (destreza->version.major != SUPPORTED_VERSION.major) {
-        fprintf(
-            stderr,
-            "ERROR: Cannot parse Destreza config with major version (%d.%d) higher than supported (%d.%d)\n",
-            destreza->version.major, destreza->version.minor,
-            SUPPORTED_VERSION.major, SUPPORTED_VERSION.minor
-        );
+    if (!parse_version(destreza, root, error) || !verify_destreza_version(destreza->version, error)) {
+        json_object_put(root);
         free_destreza(destreza);
         return NULL;
-    }
-    if (destreza->version.minor != SUPPORTED_VERSION.minor) {
-        fprintf(
-            stderr,
-            "WARNING: Destreza config's minor version (%d.%d) is higher than supported (%d.%d)\n",
-            destreza->version.major, destreza->version.minor,
-            SUPPORTED_VERSION.major, SUPPORTED_VERSION.minor
-        );
     }
 
     parse_commands(destreza, root);
@@ -61,29 +51,59 @@ Destreza *load_destreza() {
     return destreza;
 }
 
-void parse_version(Destreza *destreza, const json_object *root) {
-    if (!destreza) {
-        return;
-    }
-
+bool parse_version(Destreza *destreza, const json_object *root, FencerError **error) {
     json_object *version_object = NULL;
     json_object_object_get_ex(root, "version", &version_object);
+    if (!version_object) {
+        *error = init_fencer_error(DESTREZA_FORMAT_IS_MALFORMED_ERROR, false);
+        return false;
+    }
 
     const char *version = json_object_get_string(version_object);
+    if (!version) {
+        *error = init_fencer_error(DESTREZA_FORMAT_IS_MALFORMED_ERROR, false);
+        return false;
+    }
 
     char *version_copy = strdup(version);
     const char *major = strtok(version_copy, ".");
     const char *minor = strtok(NULL, ".");
+    if (!major || !minor) {
+        free(version_copy);
+        *error = init_fencer_error(DESTREZA_FORMAT_IS_MALFORMED_ERROR, false);
+        return false;
+    }
 
     destreza->version.major = strtol(major, NULL, 10);
     destreza->version.minor = strtol(minor, NULL, 10);
 
     free(version_copy);
+
+    return true;
+}
+
+bool verify_destreza_version(const DestrezaVersion parsed_version, FencerError **error) {
+    if (parsed_version.major != SUPPORTED_VERSION.major) {
+        *error = init_destreza_major_version_mismatch_error(parsed_version);
+        return false;
+    }
+    if (parsed_version.minor != SUPPORTED_VERSION.minor) {
+        fprintf(
+            stderr,
+            "WARNING: Destreza config's minor version (%d.%d) is higher than supported (%d.%d)\n",
+            parsed_version.major, parsed_version.minor,
+            SUPPORTED_VERSION.major, SUPPORTED_VERSION.minor
+        );
+    }
+    return true;
 }
 
 void parse_commands(Destreza *destreza, const json_object *root) {
     json_object *commands = NULL;
     json_object_object_get_ex(root, "commands", &commands);
+    if (!commands) {
+        return;
+    }
 
     parse_int_commands(destreza, commands);
     parse_arithmetic_commands(destreza, commands);
@@ -92,7 +112,6 @@ void parse_commands(Destreza *destreza, const json_object *root) {
 void parse_types(Destreza *destreza, const json_object *root) {
     json_object *types = NULL;
     json_object_object_get_ex(root, "types", &types);
-
     if (!types) {
         return;
     }
@@ -104,10 +123,6 @@ void parse_types(Destreza *destreza, const json_object *root) {
 }
 
 void parse_int_commands(Destreza *destreza, const json_object *commands) {
-    if (!destreza || !commands) {
-        return;
-    }
-
     json_object *int_commands = NULL, *push = NULL;
     json_object_object_get_ex(commands, "int", &int_commands);
     if (!int_commands) {
@@ -120,10 +135,6 @@ void parse_int_commands(Destreza *destreza, const json_object *commands) {
 }
 
 void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) {
-    if (!destreza || !commands) {
-        return;
-    }
-
     json_object *arithmetic = NULL, *add = NULL, *subtract = NULL, *negate = NULL, *multiply = NULL, *divide = NULL;
     json_object_object_get_ex(commands, "arithmetic", &arithmetic);
     if (!arithmetic) {
@@ -160,7 +171,7 @@ uint8_t parse_type_code(json_object *json) {
 }
 
 void free_destreza(Destreza *destreza) {
-    if (destreza != NULL) {
+    if (destreza) {
         free(destreza);
     }
 }

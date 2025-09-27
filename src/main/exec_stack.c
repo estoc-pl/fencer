@@ -22,15 +22,15 @@ ExecStack *init_stack() {
     return stack;
 }
 
-void exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
+bool exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
     if (!stack) {
-        return;
+        return false;
     }
 
     if (stack->active_block->sp == BLOCK_SIZE) {
         StackBlock *new_block = init_block();
         if (!new_block) {
-            return;
+            return false;
         }
         new_block->prev_block = stack->active_block;
         stack->active_block = new_block;
@@ -39,6 +39,8 @@ void exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE t
     stack->active_block->frames[stack->active_block->sp] = frame;
     stack->active_block->types[stack->active_block->sp] = type;
     stack->active_block->sp++;
+
+    return true;
 }
 
 bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type) {
@@ -101,7 +103,7 @@ void exec_stack_print_dump(const ExecStack *stack) {
 }
 
 void free_stack(ExecStack *stack) {
-    if (stack != NULL) {
+    if (stack) {
         StackBlock *block = stack->active_block;
         while (block) {
             StackBlock *prev_block = block->prev_block;
@@ -119,7 +121,7 @@ StackBlock *init_block() {
 }
 
 void free_block(StackBlock *block) {
-    if (block != NULL) {
+    if (block) {
         free(block);
     }
 }

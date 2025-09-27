@@ -21,7 +21,7 @@ typedef struct {
 
 ExecStack *init_stack();
 
-void exec_stack_push_frame(ExecStack *stack, WORD frame, WORD_TYPE type);
+bool exec_stack_push_frame(ExecStack *stack, WORD frame, WORD_TYPE type);
 
 bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type);
 

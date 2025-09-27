@@ -3,24 +3,11 @@
 
 #include <stdint.h>
 
-/*
- * Minor version update:
- * - command/type code was changed;
- * - command/type was deleted.
- * Major version update:
- * - new command/type was added;
- * - command/type was renamed/moved;
- * - command/type code format was changed.
- */
-typedef struct {
-    uint16_t major;
-    uint16_t minor;
-} Version;
-
-extern const Version SUPPORTED_VERSION;
+#include "../errors.h"
+#include "destreza_version.h"
 
 typedef struct {
-    Version version;
+    DestrezaVersion version;
 
     struct {
         struct {
@@ -41,7 +28,7 @@ typedef struct {
     } types;
 } Destreza;
 
-Destreza *load_destreza();
+Destreza *load_destreza(FencerError **error);
 
 void free_destreza(Destreza *destreza);
 

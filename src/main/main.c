@@ -1,6 +1,8 @@
 #include <cargs.h>
 
-#include "code_space.h"
+#include "errors.h"
+#include "destreza/destreza.h"
+#include "code_space/code_space.h"
 
 static cag_option cli_options[] = {
     {
@@ -45,16 +47,23 @@ int main(const int argc, char *argv[]) {
 
     const char *exec_file_path = argv[param_index];
 
-    const Destreza *destreza = load_destreza();
+    FencerError *error = NULL;
+
+    const Destreza *destreza = load_destreza(&error);
     if (!destreza) {
-        fprintf(stderr, "ERROR: An unexpected error occurred while loading Destreza config\n");
+        fencer_error_print(error);
+        free_fencer_error(error);
         return 1;
     }
 
-    CodeSpace *code_space = init_code_space(exec_file_path, destreza->version);
-
-    if (code_space) {
+    CodeSpace *code_space = init_code_space(exec_file_path, destreza->version, &error);
+    if (!code_space) {
+        fencer_error_print(error);
+        free_fencer_error(error);
+        return 1;
     }
+
+    free_fencer_error(error);
 
     return 0;
 }

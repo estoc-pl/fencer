@@ -13,12 +13,13 @@ set(MAIN_DIR ${SRC_DIR}/main)
 add_executable(
         fencer
         ${MAIN_DIR}/main.c
-        ${MAIN_DIR}/destreza.h
-        ${MAIN_DIR}/destreza.c
-        ${MAIN_DIR}/exec_stack.h
-        ${MAIN_DIR}/exec_stack.c
-        ${MAIN_DIR}/code_space.c
-        ${MAIN_DIR}/code_space.h
+        ${MAIN_DIR}/errors.h ${MAIN_DIR}/errors.c
+        ${MAIN_DIR}/destreza/destreza.h ${MAIN_DIR}/destreza/destreza.c
+        ${MAIN_DIR}/destreza/destreza_version.h ${MAIN_DIR}/destreza/destreza_version.c
+        ${MAIN_DIR}/destreza/destreza_errors.h ${MAIN_DIR}/destreza/destreza_errors.c
+        ${MAIN_DIR}/exec_stack.h ${MAIN_DIR}/exec_stack.c
+        ${MAIN_DIR}/code_space/code_space.h ${MAIN_DIR}/code_space/code_space.c
+        ${MAIN_DIR}/code_space/code_space_errors.h ${MAIN_DIR}/code_space/code_space_errors.c
 )
 
 

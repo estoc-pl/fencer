@@ -1,16 +1,17 @@
 #ifndef FENCER_CODE_SPACE_H
 #define FENCER_CODE_SPACE_H
 
-#include "destreza.h"
+#include "../errors.h"
+#include "../destreza/destreza_version.h"
 
 typedef struct {
-    Version version;
+    DestrezaVersion version;
     uint64_t size;
     uint8_t *data;
     uint64_t ip;
 } CodeSpace;
 
-CodeSpace *init_code_space(const char *exec_file_path, Version destreza_version);
+CodeSpace *init_code_space(const char *exec_file_path, DestrezaVersion destreza_version, FencerError **error);
 
 void code_space_read_next_instruction(
     const CodeSpace *code_space,
