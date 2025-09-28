@@ -9,6 +9,10 @@
     {
       "name": "cargs",
       "version>=": "1.2.0"
+    },
+    {
+      "name": "cunit",
+      "version>=": "2.1.3#8"
     }
   ]
 }

@@ -10,6 +10,12 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(RESOURCES_DIR ${SRC_DIR}/resources)
 set(MAIN_DIR ${SRC_DIR}/main)
 
+add_library(
+        fencer_core STATIC
+        ${MAIN_DIR}/core/arithmetics/int.c
+)
+target_include_directories(fencer_core PUBLIC ${MAIN_DIR}/core)
+
 add_executable(
         fencer
         ${MAIN_DIR}/main.c
@@ -21,6 +27,10 @@ add_executable(
         ${MAIN_DIR}/code_space/code_space.h ${MAIN_DIR}/code_space/code_space.c
         ${MAIN_DIR}/code_space/code_space_errors.h ${MAIN_DIR}/code_space/code_space_errors.c
 )
+
+target_link_libraries(fencer PRIVATE fencer_core)
+target_link_libraries(fencer PRIVATE json-c::json-c)
+target_link_libraries(fencer PRIVATE cargs)
 
 
 file(GLOB_RECURSE RES_FILES CONFIGURE_DEPENDS "${RESOURCES_DIR}/*")
@@ -39,5 +49,17 @@ add_custom_target(stage_resources DEPENDS "${CMAKE_BINARY_DIR}/.resources.stamp"
 add_dependencies(fencer stage_resources)
 
 
-target_link_libraries(fencer PRIVATE json-c::json-c)
-target_link_libraries(fencer PRIVATE cargs)
+find_package(unofficial-cunit CONFIG REQUIRED)
+
+set(TESTS_DIR ${CMAKE_SOURCE_DIR}/tests)
+set(TESTS_MAIN_DIR ${TESTS_DIR}/main)
+
+add_executable(
+        fencer_tests
+        ${TESTS_MAIN_DIR}/core/arithmetics/int.test.c
+        ${TESTS_MAIN_DIR}/main.c
+        tests/main/core/arithmetics/int.test.h
+)
+
+target_link_libraries(fencer_tests PRIVATE fencer_core)
+target_link_libraries(fencer_tests PRIVATE unofficial::cunit::cunit)
