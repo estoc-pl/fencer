@@ -10,4 +10,8 @@ extern const uint64_t ONE;
 
 uint64_t add(uint64_t term1, uint64_t term2);
 
+uint64_t subtract(uint64_t term1, uint64_t term2);
+
+uint64_t negate(uint64_t term);
+
 #endif //FENCER_INT_H

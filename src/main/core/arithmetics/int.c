@@ -8,22 +8,20 @@ const uint64_t ONE = 0x0000000000000001LU;
 const uint64_t MINUS_ZERO = 0xFFFFFFFFFFFFFFFFLU;
 
 uint64_t add(const uint64_t term1, const uint64_t term2) {
-    const uint64_t sign1 = term1 >> 63;
-    const uint64_t sign2 = term2 >> 63;
-
     const uint64_t term1_temp = term1 & MAX_INT;
     const uint64_t term2_temp = term2 & MAX_INT;
-
     uint64_t result = term1_temp + term2_temp;
-    const uint64_t result_sign = result >> 63;
 
-    if (sign1 ^ sign2) {
-        // invert result sign
-        result = ~result ^ MAX_INT;
+    const uint64_t sign1 = term1 & MIN_INT;
+    const uint64_t sign2 = term2 & MIN_INT;
+    const uint64_t should_invert_sign = sign1 ^ sign2;
+
+    if (sign1 & sign2 || result & should_invert_sign) {
+        result = result + ONE;
     }
 
-    if (sign1 & sign2 || result_sign & (sign1 || sign2)) {
-        result = result + ONE;
+    if (should_invert_sign) {
+        result = ~result ^ MAX_INT;
     }
 
     if (result == MINUS_ZERO) {
@@ -31,4 +29,12 @@ uint64_t add(const uint64_t term1, const uint64_t term2) {
     }
 
     return result;
+}
+
+uint64_t subtract(const uint64_t term1, const uint64_t term2) {
+    return add(term1, negate(term2));
+}
+
+uint64_t negate(const uint64_t term) {
+    return ~term;
 }
