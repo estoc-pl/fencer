@@ -56,9 +56,8 @@ set(TESTS_MAIN_DIR ${TESTS_DIR}/main)
 
 add_executable(
         fencer_tests
-        ${TESTS_MAIN_DIR}/core/arithmetics/int.test.c
         ${TESTS_MAIN_DIR}/main.c
-        tests/main/core/arithmetics/int.test.h
+        ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.c
 )
 
 target_link_libraries(fencer_tests PRIVATE fencer_core)

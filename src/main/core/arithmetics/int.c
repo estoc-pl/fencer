@@ -5,7 +5,7 @@ const uint64_t MIN_INT = 0x8000000000000000LU;
 const uint64_t ZERO = 0x0000000000000000LU;
 const uint64_t ONE = 0x0000000000000001LU;
 
-const uint64_t MINUS_ZERO = 0xFFFFFFFFFFFFFFFFLU;
+const uint64_t MINUS_ZERO = 0xFFFFFFFFFFFFFFFFULL;
 
 uint64_t add(const uint64_t term1, const uint64_t term2) {
     const uint64_t term1_temp = term1 & MAX_INT;

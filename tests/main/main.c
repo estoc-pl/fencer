@@ -1,14 +1,14 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
-#include "core/arithmetics/int.test.h"
+#include "core/arithmetics/int_add.test.h"
 
 int main() {
     if (CU_initialize_registry() != CUE_SUCCESS) {
         return CU_get_error();
     }
 
-    initialize_arithmetics_int_test_suite();
+    initialize_arithmetics_int_add_test_suite();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
