@@ -58,6 +58,7 @@ add_executable(
         fencer_tests
         ${TESTS_MAIN_DIR}/main.c
         ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.c
+        ${TESTS_MAIN_DIR}/core/arithmetics/int_multiply.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_multiply.test.c
 )
 
 target_link_libraries(fencer_tests PRIVATE fencer_core)
