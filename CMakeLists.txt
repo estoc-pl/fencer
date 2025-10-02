@@ -13,13 +13,13 @@ set(MAIN_DIR ${SRC_DIR}/main)
 add_library(
         fencer_core STATIC
         ${MAIN_DIR}/core/arithmetics/int.c
+        ${MAIN_DIR}/core/errors.c
 )
 target_include_directories(fencer_core PUBLIC ${MAIN_DIR}/core)
 
 add_executable(
         fencer
         ${MAIN_DIR}/main.c
-        ${MAIN_DIR}/errors.h ${MAIN_DIR}/errors.c
         ${MAIN_DIR}/destreza/destreza.h ${MAIN_DIR}/destreza/destreza.c
         ${MAIN_DIR}/destreza/destreza_version.h ${MAIN_DIR}/destreza/destreza_version.c
         ${MAIN_DIR}/destreza/destreza_errors.h ${MAIN_DIR}/destreza/destreza_errors.c
@@ -59,6 +59,7 @@ add_executable(
         ${TESTS_MAIN_DIR}/main.c
         ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_add.test.c
         ${TESTS_MAIN_DIR}/core/arithmetics/int_multiply.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_multiply.test.c
+        ${TESTS_MAIN_DIR}/core/arithmetics/int_divide.test.h ${TESTS_MAIN_DIR}/core/arithmetics/int_divide.test.c
 )
 
 target_link_libraries(fencer_tests PRIVATE fencer_core)

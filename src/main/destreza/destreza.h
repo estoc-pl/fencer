@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "../errors.h"
+#include "../core/errors.h"
 #include "destreza_version.h"
 
 typedef struct {

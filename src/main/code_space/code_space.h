@@ -1,7 +1,7 @@
 #ifndef FENCER_CODE_SPACE_H
 #define FENCER_CODE_SPACE_H
 
-#include "../errors.h"
+#include "../core/errors.h"
 #include "../destreza/destreza_version.h"
 
 typedef struct {

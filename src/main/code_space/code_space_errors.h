@@ -1,7 +1,7 @@
 #ifndef FENCER_CODE_SPACE_ERRORS_H
 #define FENCER_CODE_SPACE_ERRORS_H
 
-#include "../errors.h"
+#include "../core/errors.h"
 #include "../destreza/destreza_version.h"
 
 #define UNKNOWN_CODE_SPACE_LOAD_ERROR "An unexpected error occurred while loading executable file"

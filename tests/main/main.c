@@ -3,6 +3,7 @@
 
 #include "core/arithmetics/int_add.test.h"
 #include "core/arithmetics/int_multiply.test.h"
+#include "core/arithmetics/int_divide.test.h"
 
 int main() {
     if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -11,6 +12,7 @@ int main() {
 
     initialize_arithmetics_int_add_test_suite();
     initialize_arithmetics_int_multiply_test_suite();
+    initialize_arithmetics_int_divide_test_suite();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

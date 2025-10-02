@@ -71,3 +71,37 @@ uint64_t int_multiply(const uint64_t term1, const uint64_t term2) {
 
     return low_result;
 }
+
+uint64_t int_divide(const uint64_t term1, const uint64_t term2, FencerError **error) {
+    if (term2 == INT_ZERO) {
+        *error = init_fencer_error(DIVISION_BY_ZERO_ERROR, false);
+        return INT_ZERO;
+    }
+
+    uint64_t rest = ~int_abs(term1) & MAX_INT;
+    uint64_t divisor = int_abs(term2);
+
+    uint8_t shifted_bits = 0;
+    while (!(divisor & 0x4000000000000000ULL)) {
+        divisor <<= 1;
+        shifted_bits++;
+    }
+
+    uint64_t result = INT_ZERO;
+    for (uint64_t result_mask = MIN_INT >> (63 - shifted_bits); result_mask != 0; result_mask >>= 1) {
+        const uint64_t new_rest = rest + divisor;
+
+        if (!(new_rest & MIN_INT)) {
+            result |= result_mask;
+            rest = new_rest;
+        }
+
+        divisor >>= 1;
+    }
+
+    if ((term1 ^ term2) & MIN_INT) {
+        return int_negate(result);
+    }
+
+    return result;
+}

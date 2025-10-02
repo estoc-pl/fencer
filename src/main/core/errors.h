@@ -1,5 +1,6 @@
 #ifndef FENCER_ERROR_H
 #define FENCER_ERROR_H
+
 #include <stdbool.h>
 
 typedef struct {

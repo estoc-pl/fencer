@@ -1,6 +1,6 @@
 #include <cargs.h>
 
-#include "errors.h"
+#include "core/errors.h"
 #include "destreza/destreza.h"
 #include "code_space/code_space.h"
 
