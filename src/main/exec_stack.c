@@ -7,30 +7,33 @@ StackBlock *init_block();
 
 void free_block(StackBlock *block);
 
-ExecStack *init_stack() {
+ExecStack *init_stack(FencerError **error) {
     ExecStack *stack = malloc(sizeof(ExecStack));
     if (!stack) {
+        *error = init_fencer_error(UNKNOWN_EXEC_STACK_INIT_ERROR, false);
         return NULL;
     }
 
     stack->active_block = init_block();
     if (!stack->active_block) {
         free(stack);
+        *error = init_fencer_error(UNKNOWN_EXEC_STACK_INIT_BLOCK_ERROR, false);
         return NULL;
     }
 
     return stack;
 }
 
-bool exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type) {
+void exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE type, FencerError **error) {
     if (!stack) {
-        return false;
+        return;
     }
 
     if (stack->active_block->sp == BLOCK_SIZE) {
         StackBlock *new_block = init_block();
         if (!new_block) {
-            return false;
+            *error = init_fencer_error(UNKNOWN_EXEC_STACK_INIT_BLOCK_ERROR, false);
+            return;
         }
         new_block->prev_block = stack->active_block;
         stack->active_block = new_block;
@@ -39,18 +42,17 @@ bool exec_stack_push_frame(ExecStack *stack, const WORD frame, const WORD_TYPE t
     stack->active_block->frames[stack->active_block->sp] = frame;
     stack->active_block->types[stack->active_block->sp] = type;
     stack->active_block->sp++;
-
-    return true;
 }
 
-bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type) {
+void exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type, FencerError **error) {
     if (!stack) {
-        return false;
+        return;
     }
 
     if (stack->active_block->sp == 0) {
         if (!stack->active_block->prev_block) {
-            return false;
+            *error = init_fencer_error(EXEC_STACK_EMPTY_ERROR, false);
+            return;
         }
 
         StackBlock *old_block = stack->active_block;
@@ -65,8 +67,6 @@ bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *targe
     if (target_type) {
         *target_type = stack->active_block->types[stack->active_block->sp];
     }
-
-    return true;
 }
 
 void print_binary(const uint8_t byte) {

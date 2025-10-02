@@ -1,8 +1,13 @@
 #ifndef FENCER_EXEC_STACK_H
 #define FENCER_EXEC_STACK_H
 
-#include <stdbool.h>
 #include <stdint.h>
+
+#include "core/errors.h"
+
+#define UNKNOWN_EXEC_STACK_INIT_ERROR "An unexpected error occurred while initializing execution stack"
+#define UNKNOWN_EXEC_STACK_INIT_BLOCK_ERROR "An unexpected error occurred while loading execution stack block"
+#define EXEC_STACK_EMPTY_ERROR "Internal error: Attempted pop on empty execution stack"
 
 #define WORD uint64_t
 #define WORD_TYPE uint8_t
@@ -19,11 +24,11 @@ typedef struct {
     StackBlock *active_block;
 } ExecStack;
 
-ExecStack *init_stack();
+ExecStack *init_stack(FencerError **error);
 
-bool exec_stack_push_frame(ExecStack *stack, WORD frame, WORD_TYPE type);
+void exec_stack_push_frame(ExecStack *stack, WORD frame, WORD_TYPE type, FencerError **error);
 
-bool exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type);
+void exec_stack_pop_frame(ExecStack *stack, WORD *target_frame, WORD_TYPE *target_type, FencerError **error);
 
 void exec_stack_print_dump(const ExecStack *stack);
 

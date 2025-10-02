@@ -45,7 +45,8 @@ void code_space_read_next_instruction(
     const CodeSpace *code_space,
     uint16_t *code,
     uint8_t **data,
-    uint64_t *length_left
+    uint64_t *length_left,
+    FencerError **error
 ) {
     if (!code_space) {
         return;
@@ -56,6 +57,8 @@ void code_space_read_next_instruction(
         *code = (uint16_t) code_space->data[code_space->ip] << 8 | code_space->data[code_space->ip + 1];
         *data = &code_space->data[code_space->ip + 2];
         *length_left = current_length_left - 2;
+    } else {
+        *error = init_fencer_error(EXECUTABLE_FORMAT_IS_MALFORMED_ERROR, false);
     }
 }
 

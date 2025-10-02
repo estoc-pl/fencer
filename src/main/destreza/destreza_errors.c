@@ -8,7 +8,7 @@
 
 #define DESTREZA_MAJOR_VERSION_MISMATCH_ERROR "Cannot parse Destreza config with major version (%d.%d) higher than supported (%d.%d)"
 
-FencerError *init_destreza_major_version_mismatch_error(DestrezaVersion parsed_version) {
+FencerError *init_destreza_major_version_mismatch_error(const DestrezaVersion parsed_version) {
     char *message = calloc(strlen(DESTREZA_MAJOR_VERSION_MISMATCH_ERROR) - 4 * 2 + 4 * 5 + 1, sizeof(char));
     if (!message) {
         return NULL;
