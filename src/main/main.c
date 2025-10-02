@@ -3,6 +3,7 @@
 #include "core/errors.h"
 #include "destreza/destreza.h"
 #include "code_space/code_space.h"
+#include "executor.h"
 
 static cag_option cli_options[] = {
     {
@@ -13,13 +14,9 @@ static cag_option cli_options[] = {
     }
 };
 
-void print_help() {
-    printf("Usage: fencer [OPTIONS] <exec_file>\n");
-    printf("Arguments:\n");
-    printf("  exec_file — Path to file containing Destreza byte code to be executed\n");
-    printf("Options:\n");
-    cag_option_print(cli_options, CAG_ARRAY_SIZE(cli_options), stdout);
-}
+void print_help();
+
+int handle_error(FencerError *error);
 
 int main(const int argc, char *argv[]) {
     cag_option_context context;
@@ -50,20 +47,35 @@ int main(const int argc, char *argv[]) {
     FencerError *error = NULL;
 
     const Destreza *destreza = load_destreza(&error);
-    if (!destreza) {
-        fencer_error_print(error);
-        free_fencer_error(error);
-        return 1;
+    if (error != NULL) {
+        return handle_error(error);
     }
 
     CodeSpace *code_space = init_code_space(exec_file_path, destreza->version, &error);
-    if (!code_space) {
-        fencer_error_print(error);
-        free_fencer_error(error);
-        return 1;
+    if (error != NULL) {
+        return handle_error(error);
+    }
+
+    execute_code_space(code_space, destreza, &error);
+    if (error != NULL) {
+        return handle_error(error);
     }
 
     free_fencer_error(error);
 
     return 0;
+}
+
+void print_help() {
+    printf("Usage: fencer [OPTIONS] <exec_file>\n");
+    printf("Arguments:\n");
+    printf("  exec_file — Path to file containing Destreza byte code to be executed\n");
+    printf("Options:\n");
+    cag_option_print(cli_options, CAG_ARRAY_SIZE(cli_options), stdout);
+}
+
+int handle_error(FencerError *error) {
+    fencer_error_print(error);
+    free_fencer_error(error);
+    return 1;
 }

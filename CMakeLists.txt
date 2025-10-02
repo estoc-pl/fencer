@@ -29,6 +29,7 @@ add_executable(
         ${MAIN_DIR}/commands/arithmetic.h ${MAIN_DIR}/commands/arithmetic.c
         ${MAIN_DIR}/commands/int.h ${MAIN_DIR}/commands/int.c
         ${MAIN_DIR}/commands/command.h ${MAIN_DIR}/commands/command.c
+        ${MAIN_DIR}/executor.h ${MAIN_DIR}/executor.c
 )
 
 target_link_libraries(fencer PRIVATE fencer_core)
