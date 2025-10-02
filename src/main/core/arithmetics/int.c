@@ -78,17 +78,22 @@ uint64_t int_divide(const uint64_t term1, const uint64_t term2, FencerError **er
         return INT_ZERO;
     }
 
-    uint64_t rest = ~int_abs(term1) & MAX_INT;
-    uint64_t divisor = int_abs(term2);
-
-    uint8_t shifted_bits = 0;
-    while (!(divisor & 0x4000000000000000ULL)) {
-        divisor <<= 1;
-        shifted_bits++;
+    if (term1 == INT_ZERO) {
+        return INT_ZERO;
     }
 
+    uint64_t rest = (term1 & MIN_INT ? term1 : ~term1) & MAX_INT;
+    uint64_t divisor = int_abs(term2);
+
     uint64_t result = INT_ZERO;
-    for (uint64_t result_mask = MIN_INT >> (63 - shifted_bits); result_mask != 0; result_mask >>= 1) {
+    uint64_t result_mask = INT_ONE;
+
+    while (!(divisor & 0x4000000000000000ULL)) {
+        divisor <<= 1;
+        result_mask <<= 1;
+    }
+
+    while (result_mask) {
         const uint64_t new_rest = rest + divisor;
 
         if (!(new_rest & MIN_INT)) {
@@ -97,6 +102,7 @@ uint64_t int_divide(const uint64_t term1, const uint64_t term2, FencerError **er
         }
 
         divisor >>= 1;
+        result_mask >>= 1;
     }
 
     if ((term1 ^ term2) & MIN_INT) {
