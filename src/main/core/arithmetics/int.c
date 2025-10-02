@@ -1,11 +1,6 @@
 #include "int.h"
 
-const uint64_t MAX_INT = 0x7FFFFFFFFFFFFFFFULL;
-const uint64_t MIN_INT = 0x8000000000000000ULL;
-const uint64_t INT_ZERO = 0x0000000000000000ULL;
-const uint64_t INT_ONE = 0x0000000000000001ULL;
-
-const uint64_t MINUS_ZERO = 0xFFFFFFFFFFFFFFFFULL;
+#define MINUS_ZERO 0xFFFFFFFFFFFFFFFFULL
 
 uint64_t int_add(const uint64_t term1, const uint64_t term2) {
     const uint64_t term1_temp = term1 & MAX_INT;

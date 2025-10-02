@@ -7,10 +7,10 @@
 
 #define DIVISION_BY_ZERO_ERROR "Division by zero detected"
 
-extern const uint64_t MAX_INT;
-extern const uint64_t MIN_INT;
-extern const uint64_t INT_ZERO;
-extern const uint64_t INT_ONE;
+#define MAX_INT 0x7FFFFFFFFFFFFFFFULL
+#define MIN_INT 0x8000000000000000ULL
+#define INT_ZERO 0x0000000000000000ULL
+#define INT_ONE 0x0000000000000001ULL
 
 uint64_t int_add(uint64_t term1, uint64_t term2);
 
