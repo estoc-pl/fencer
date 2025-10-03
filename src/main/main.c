@@ -3,7 +3,7 @@
 #include "core/errors.h"
 #include "destreza/destreza.h"
 #include "code_space/code_space.h"
-#include "executor.h"
+#include "executor/executor.h"
 
 static cag_option cli_options[] = {
     {

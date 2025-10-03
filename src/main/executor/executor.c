@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "exec_stack.h"
-#include "commands/int.h"
-#include "commands/arithmetic.h"
+#include "../exec_stack.h"
+#include "../commands/int.h"
+#include "../commands/arithmetic.h"
+#include "executor_errors.h"
 
 #define IF_CODE(destreza_code) if (destreza_code == code)
-#define THEN_COMMAND(command_name) { bytes_read = command_name(destreza, data, length_left, exec_stack, error); }
+#define THEN_COMMAND(command_name) { return command_name(destreza, data, length_left, exec_stack, error); }
 
 int64_t execute_command(
     const Destreza *destreza,
@@ -53,8 +54,6 @@ int64_t execute_command(
     ExecStack *exec_stack,
     FencerError **error
 ) {
-    int64_t bytes_read = 0;
-
     IF_CODE(destreza->commands.int_commands.push) THEN_COMMAND(int_push)
     IF_CODE(destreza->commands.arithmetic.add) THEN_COMMAND(arithmetic_add)
     IF_CODE(destreza->commands.arithmetic.subtract) THEN_COMMAND(arithmetic_subtract)
@@ -62,5 +61,7 @@ int64_t execute_command(
     IF_CODE(destreza->commands.arithmetic.multiply) THEN_COMMAND(arithmetic_multiply)
     IF_CODE(destreza->commands.arithmetic.divide) THEN_COMMAND(arithmetic_divide)
 
-    return bytes_read;
+    *error = init_unknown_command_code_error(code);
+
+    return 0;
 }
