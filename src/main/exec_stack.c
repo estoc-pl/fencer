@@ -86,7 +86,7 @@ void exec_stack_print_dump(const ExecStack *stack) {
 
     const StackBlock *current_block = stack->active_block;
     while (current_block) {
-        for (int64_t i = current_block->sp - 1; i >= 0; i--) {
+        for (int64_t i = (int64_t) current_block->sp - 1; i >= 0; i--) {
             print_binary(current_block->types[i]);
             printf("     ");
             for (int j = 1; j <= 8; j++) {

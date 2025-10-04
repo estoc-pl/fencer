@@ -19,6 +19,8 @@ void parse_int_commands(Destreza *destreza, const json_object *commands);
 
 void parse_arithmetic_commands(Destreza *destreza, const json_object *commands);
 
+void parse_io_commands(Destreza *destreza, const json_object *commands);
+
 void parse_types(Destreza *destreza, const json_object *root);
 
 uint8_t parse_type_code(json_object *json);
@@ -107,6 +109,7 @@ void parse_commands(Destreza *destreza, const json_object *root) {
 
     parse_int_commands(destreza, commands);
     parse_arithmetic_commands(destreza, commands);
+    parse_io_commands(destreza, commands);
 }
 
 void parse_types(Destreza *destreza, const json_object *root) {
@@ -152,6 +155,18 @@ void parse_arithmetic_commands(Destreza *destreza, const json_object *commands) 
     destreza->commands.arithmetic.negate = parse_command_code(negate);
     destreza->commands.arithmetic.multiply = parse_command_code(multiply);
     destreza->commands.arithmetic.divide = parse_command_code(divide);
+}
+
+void parse_io_commands(Destreza *destreza, const json_object *commands) {
+    json_object *io_commands = NULL, *print = NULL;
+    json_object_object_get_ex(commands, "io", &io_commands);
+    if (!io_commands) {
+        return;
+    }
+
+    json_object_object_get_ex(io_commands, "print", &print);
+
+    destreza->commands.io.print = parse_command_code(print);
 }
 
 uint16_t parse_command_code(json_object *json) {

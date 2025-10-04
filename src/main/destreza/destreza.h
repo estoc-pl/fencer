@@ -21,6 +21,10 @@ typedef struct {
             uint16_t multiply;
             uint16_t divide;
         } arithmetic;
+
+        struct {
+            uint16_t print;
+        } io;
     } commands;
 
     struct {

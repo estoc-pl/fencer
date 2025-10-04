@@ -26,9 +26,10 @@ add_executable(
         ${MAIN_DIR}/exec_stack.h ${MAIN_DIR}/exec_stack.c
         ${MAIN_DIR}/code_space/code_space.h ${MAIN_DIR}/code_space/code_space.c
         ${MAIN_DIR}/code_space/code_space_errors.h ${MAIN_DIR}/code_space/code_space_errors.c
+        ${MAIN_DIR}/commands/command.h ${MAIN_DIR}/commands/command.c
         ${MAIN_DIR}/commands/arithmetic.h ${MAIN_DIR}/commands/arithmetic.c
         ${MAIN_DIR}/commands/int.h ${MAIN_DIR}/commands/int.c
-        ${MAIN_DIR}/commands/command.h ${MAIN_DIR}/commands/command.c
+        ${MAIN_DIR}/commands/io.h ${MAIN_DIR}/commands/io.c
         ${MAIN_DIR}/executor/executor.h ${MAIN_DIR}/executor/executor.c
         ${MAIN_DIR}/executor/executor_errors.h ${MAIN_DIR}/executor/executor_errors.c
 )

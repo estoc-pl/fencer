@@ -6,6 +6,7 @@
 #include "../exec_stack.h"
 #include "../commands/int.h"
 #include "../commands/arithmetic.h"
+#include "../commands/io.h"
 #include "executor_errors.h"
 
 #define IF_CODE(destreza_code) if (destreza_code == code)
@@ -42,8 +43,6 @@ void execute_code_space(CodeSpace *code_space, const Destreza *destreza, FencerE
 
         code_space_shift_ip(code_space, 2 + bytes_read);
     }
-
-    exec_stack_print_dump(exec_stack);
 }
 
 int64_t execute_command(
@@ -60,6 +59,7 @@ int64_t execute_command(
     IF_CODE(destreza->commands.arithmetic.negate) THEN_COMMAND(arithmetic_negate)
     IF_CODE(destreza->commands.arithmetic.multiply) THEN_COMMAND(arithmetic_multiply)
     IF_CODE(destreza->commands.arithmetic.divide) THEN_COMMAND(arithmetic_divide)
+    IF_CODE(destreza->commands.io.print) THEN_COMMAND(io_print)
 
     *error = init_unknown_command_code_error(code);
 
